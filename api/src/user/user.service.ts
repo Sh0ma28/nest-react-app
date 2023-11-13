@@ -8,7 +8,7 @@ export class UserService {
 	async byId(id: number) {
 		const user = await this.prisma.user.findUniqueOrThrow({
 			where: {
-				id: Number(id)
+				id: id
 			},
 			select: {
 				id: true,
