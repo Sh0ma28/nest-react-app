@@ -1,27 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { CreateTaskDto } from './dto/create-task.dto'
-import { UpdateTaskDto } from './dto/update-task.dto'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException
+} from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
+import { TaskDto } from './dto/task.dto'
 
 @Injectable()
 export class TaskService {
 	constructor(private prisma: PrismaService) {}
 
-	async create(dto: CreateTaskDto, userId: number) {
+	async create(dto: TaskDto, userId: number) {
+		await this.validateParent(dto)
 		return this.prisma.task.create({
 			data: {
-				title: dto.title,
-				description: dto.description,
-				user: {
-					connect: {
-						id: userId
-					}
-				},
-				parent: {
-					connect: {
-						id: dto.parentId
-					}
-				}
+				...dto,
+				userId
 			}
 		})
 	}
@@ -32,41 +26,26 @@ export class TaskService {
 				userId: userId
 			},
 			orderBy: {
-				createdAt: 'desc'
+				id: 'desc'
 			}
 		})
 	}
 
 	async findOne(id: number, userId: number) {
-		await this.validateOwner(id, userId)
-
-		return this.prisma.task.findUnique({
-			where: {
-				id: id
-			}
-		})
+		const task = await this.validateOwner(id, userId)
+		return task
 	}
 
-	async update(id: number, dto: UpdateTaskDto, userId: number) {
+	async update(id: number, dto: TaskDto, userId: number) {
 		await this.validateOwner(id, userId)
-
+		await this.validateParent(dto)
 		return this.prisma.task.update({
 			where: {
 				id: id
 			},
 			data: {
-				title: dto.title,
-				description: dto.description,
-				user: {
-					connect: {
-						id: userId
-					}
-				},
-				parent: {
-					connect: {
-						id: dto.parentId
-					}
-				}
+				...dto,
+				userId
 			}
 		})
 	}
@@ -81,11 +60,26 @@ export class TaskService {
 	}
 
 	async validateOwner(id: number, userId: number) {
-		const task = await this.prisma.task.findUniqueOrThrow({
+		const task = await this.prisma.task.findUnique({
 			where: {
 				id: id
 			}
 		})
-		if (task.userId !== userId) throw new BadRequestException()
+		if (!task) throw new NotFoundException('Task not found')
+		if (task.userId !== userId)
+			throw new BadRequestException('User is not a task owner')
+		return task
+	}
+
+	async validateParent(dto: TaskDto) {
+		const { parentId } = dto
+		if (parentId) {
+			const parent = this.prisma.task.findUnique({
+				where: {
+					id: parentId
+				}
+			})
+			if (!parent) throw new BadRequestException('Parent task not exist')
+		}
 	}
 }

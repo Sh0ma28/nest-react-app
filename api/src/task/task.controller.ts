@@ -5,11 +5,12 @@ import {
 	Body,
 	Patch,
 	Param,
-	Delete
+	Delete,
+	ValidationPipe,
+	UsePipes
 } from '@nestjs/common'
 import { TaskService } from './task.service'
-import { CreateTaskDto } from './dto/create-task.dto'
-import { UpdateTaskDto } from './dto/update-task.dto'
+import { TaskDto } from './dto/task.dto'
 import { Auth } from 'src/decorators/auth.decorator'
 import { CurrentUser } from 'src/decorators/user.decorator'
 
@@ -17,13 +18,11 @@ import { CurrentUser } from 'src/decorators/user.decorator'
 export class TaskController {
 	constructor(private readonly taskService: TaskService) {}
 
+	@UsePipes(new ValidationPipe())
 	@Auth()
 	@Post()
-	async create(
-		@Body() createTaskDto: CreateTaskDto,
-		@CurrentUser('id') userId: number
-	) {
-		return this.taskService.create(createTaskDto, userId)
+	async create(@Body() dto: TaskDto, @CurrentUser('id') userId: number) {
+		return this.taskService.create(dto, userId)
 	}
 
 	@Auth()
@@ -38,14 +37,15 @@ export class TaskController {
 		return this.taskService.findOne(+id, userId)
 	}
 
+	@UsePipes(new ValidationPipe())
 	@Auth()
 	@Patch(':id')
 	async update(
 		@Param('id') id: string,
-		@Body() updateTaskDto: UpdateTaskDto,
+		@Body() dto: TaskDto,
 		@CurrentUser('id') userId: number
 	) {
-		return this.taskService.update(+id, updateTaskDto, userId)
+		return this.taskService.update(+id, dto, userId)
 	}
 
 	@Auth()

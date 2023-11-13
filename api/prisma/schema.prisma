@@ -12,23 +12,16 @@ datasource db {
 
 model User {
   id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-
   username  String    @unique
   password  String
-
   tasks     Task[]
 }
 
 model Task {
   id          Int             @id @default(autoincrement())
-  createdAt   DateTime        @default(now()) @map("created_at")
-  updatedAt   DateTime        @updatedAt @map("updated_at")
-
   title       String
-  description String
-  status      EnumTaskStatus  @default(NEW)
+  description String?
+  status      EnumTaskStatus  @default(IN_PROGRESS)
 
   user        User            @relation(fields: [userId], references: [id])
   userId      Int             @map("user_id")
@@ -40,7 +33,6 @@ model Task {
 }
 
 enum EnumTaskStatus {
-  NEW
   IN_PROGRESS
   COMPLETE
 }
