@@ -4,4 +4,5 @@
 *.js
 *.md
 *.svg
-/node_modules
+node_modules
+dist
