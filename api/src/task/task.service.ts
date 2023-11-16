@@ -11,19 +11,23 @@ export class TaskService {
 	constructor(private prisma: PrismaService) {}
 
 	async create(dto: TaskDto, userId: number) {
-		await this.validateParent(dto)
-		return this.prisma.task.create({
+		const task = await this.prisma.task.create({
 			data: {
-				...dto,
-				userId
+				title: '',
+				user: {
+					connect: {
+						id: userId
+					}
+				}
 			}
 		})
+		return this.update(task.id, dto, userId)
 	}
 
 	async findAll(userId: number) {
 		return this.prisma.task.findMany({
 			where: {
-				userId: userId
+				userId
 			},
 			orderBy: {
 				id: 'desc'
@@ -38,14 +42,30 @@ export class TaskService {
 
 	async update(id: number, dto: TaskDto, userId: number) {
 		await this.validateOwner(id, userId)
-		await this.validateParent(dto)
+		const { title, description, parentId, status, children } = dto
+		if (parentId) {
+			await this.validateParent(parentId)
+			await this.prisma.task.update({
+				where: {
+					id
+				},
+				data: {
+					parent: {
+						connect: {
+							id: parentId
+						}
+					}
+				}
+			})
+		}
 		return this.prisma.task.update({
 			where: {
-				id: id
+				id
 			},
 			data: {
-				...dto,
-				userId
+				title,
+				description,
+				status
 			}
 		})
 	}
@@ -54,7 +74,7 @@ export class TaskService {
 		await this.validateOwner(id, userId)
 		return this.prisma.task.delete({
 			where: {
-				id: id
+				id
 			}
 		})
 	}
@@ -62,7 +82,7 @@ export class TaskService {
 	async validateOwner(id: number, userId: number) {
 		const task = await this.prisma.task.findUnique({
 			where: {
-				id: id
+				id
 			}
 		})
 		if (!task) throw new NotFoundException('Task not found')
@@ -71,12 +91,11 @@ export class TaskService {
 		return task
 	}
 
-	async validateParent(dto: TaskDto) {
-		const { parentId } = dto
-		if (parentId) {
+	async validateParent(id: number) {
+		if (id) {
 			const parent = this.prisma.task.findUnique({
 				where: {
-					id: parentId
+					id
 				}
 			})
 			if (!parent) throw new BadRequestException('Parent task not exist')

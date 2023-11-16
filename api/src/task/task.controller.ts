@@ -18,7 +18,9 @@ import { CurrentUser } from 'src/decorators/user.decorator'
 export class TaskController {
 	constructor(private readonly taskService: TaskService) {}
 
-	@UsePipes(new ValidationPipe())
+	@UsePipes(new ValidationPipe({
+		whitelist: true,
+	  }))
 	@Auth()
 	@Post()
 	async create(@Body() dto: TaskDto, @CurrentUser('id') userId: number) {
@@ -37,7 +39,9 @@ export class TaskController {
 		return this.taskService.findOne(+id, userId)
 	}
 
-	@UsePipes(new ValidationPipe())
+	@UsePipes(new ValidationPipe({
+		whitelist: true,
+	  }))
 	@Auth()
 	@Patch(':id')
 	async update(

@@ -1,4 +1,5 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { EnumTaskStatus } from '@prisma/client'
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class TaskDto {
 	@IsString()
@@ -11,4 +12,11 @@ export class TaskDto {
 	@IsOptional()
 	@IsNumber()
 	parentId: number
+
+	@IsOptional()
+	@IsString()
+	status: EnumTaskStatus
+
+	@IsArray()
+	children: number[]
 }
