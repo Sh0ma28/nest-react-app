@@ -1,33 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import './App.css'
+import { AuthService } from './auth/auth.service'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loginForm, setLoginForm] = useState({
+    username: '',
+    password: '',
+  })
+  const [registerForm, setRegisterForm] = useState({
+    username: '',
+    password: '',
+  })
+
+  function handleLoginFormChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.name === 'username')
+      setLoginForm({ ...loginForm, username: e.target.value })
+    if (e.target.name === 'password')
+      setLoginForm({ ...loginForm, password: e.target.value })
+  }
+
+  function handleRegisterFormChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.name === 'username')
+      setRegisterForm({ ...registerForm, username: e.target.value })
+    if (e.target.name === 'password')
+      setRegisterForm({ ...registerForm, password: e.target.value })
+  }
+
+  async function loginFormSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const data = await AuthService.loginUser(loginForm)
+    console.log(data)
+  }
+
+  async function registerFormSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const data = await AuthService.registerUser(registerForm)
+    console.log(data)
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount(count => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <form onSubmit={loginFormSubmit}>
+        <label>Логин</label>
+        <input
+          placeholder="Имя пользователя"
+          value={loginForm.username}
+          name="username"
+          onChange={handleLoginFormChange}
+        ></input>
+        <input
+          placeholder="Пароль"
+          value={loginForm.password}
+          name="password"
+          onChange={handleLoginFormChange}
+        ></input>
+        <button type="submit">Войти</button>
+      </form>
+      <form onSubmit={registerFormSubmit}>
+        <label>Регистрация</label>
+        <input
+          placeholder="Имя пользователя"
+          value={registerForm.username}
+          onChange={handleRegisterFormChange}
+          name="username"
+        ></input>
+        <input
+          placeholder="Пароль"
+          value={registerForm.password}
+          onChange={handleRegisterFormChange}
+          name="password"
+        ></input>
+        <button type="submit">Отправить</button>
+      </form>
     </>
   )
 }
