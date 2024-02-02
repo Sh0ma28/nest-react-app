@@ -8,10 +8,6 @@ export const AuthService = {
     const response = await axios.post<IToken>(`${baseURL}/auth/register/`, {
       ...data,
     })
-    if (response.status === 200) {
-      localStorage.setItem('accessToken', response.data.accessToken)
-      localStorage.setItem('refreshToken', response.data.refreshToken)
-    }
     return response.data
   },
 
@@ -19,10 +15,6 @@ export const AuthService = {
     const response = await axios.post<IToken>(`${baseURL}/auth/login/`, {
       ...data,
     })
-    if (response.status === 200) {
-      localStorage.setItem('accessToken', response.data.accessToken)
-      localStorage.setItem('refreshToken', response.data.refreshToken)
-    }
     return response.data
   },
 
@@ -31,7 +23,7 @@ export const AuthService = {
     const response = await axios.post<IToken>(`${baseURL}/auth/refresh/`, {
       refreshToken,
     })
-    if (response.status === 200) {
+    if (response.status === 201) {
       localStorage.setItem('accessToken', response.data.accessToken)
       localStorage.setItem('refreshToken', response.data.refreshToken)
     }

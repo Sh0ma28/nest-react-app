@@ -42,7 +42,7 @@ export class TaskService {
 
 	async update(id: number, dto: TaskDto, userId: number) {
 		await this.validateOwner(id, userId)
-		const { title, description, parentId, status, children } = dto
+		const { title, description, parentId, isCompleted, children } = dto
 		if (parentId) {
 			await this.validateParent(parentId)
 			await this.prisma.task.update({
@@ -65,7 +65,7 @@ export class TaskService {
 			data: {
 				title,
 				description,
-				status
+				isCompleted
 			}
 		})
 	}

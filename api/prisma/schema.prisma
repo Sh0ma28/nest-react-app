@@ -21,7 +21,7 @@ model Task {
   id          Int             @id @default(autoincrement())
   title       String
   description String?
-  status      EnumTaskStatus  @default(IN_PROGRESS)
+  isCompleted Boolean         @default(false)
 
   user        User            @relation(fields: [userId], references: [id])
   userId      Int             @map("user_id")
@@ -30,9 +30,4 @@ model Task {
   parentId    Int?            @map("parent_id")
 
   children    Task[]          @relation("tree")
-}
-
-enum EnumTaskStatus {
-  IN_PROGRESS
-  COMPLETE
 }

@@ -1,5 +1,11 @@
-import { EnumTaskStatus } from '@prisma/client'
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import {
+	IsArray,
+	IsBoolean,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString
+} from 'class-validator'
 
 export class TaskDto {
 	@IsString()
@@ -14,8 +20,8 @@ export class TaskDto {
 	parentId: number
 
 	@IsOptional()
-	@IsString()
-	status: EnumTaskStatus
+	@IsBoolean()
+	isCompleted: boolean
 
 	@IsArray()
 	children: number[]

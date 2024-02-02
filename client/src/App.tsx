@@ -2,17 +2,27 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Login from './pages/Login'
 import TaskCreate from './pages/TaskCreate'
-import TaskList from './pages/TaskList'
+import Header from './components/header/Header'
+import Side from './components/side/Side'
+import Home from './pages/Home'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<TaskList />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/task/create" element={<TaskCreate />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Header />
+      <div className="main">
+        <Side />
+        <div className="page">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/task/create" element={<TaskCreate />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </div>
+    </>
   )
 }
 

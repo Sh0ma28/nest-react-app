@@ -1,11 +1,14 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
-import { useAxios } from '../api/api.inteceptors'
+import { useAppDispatch } from '../app/hooks'
+import { createTask } from '../features/tasks/tasks.actions'
 
 const TaskCreate = () => {
-  const api = useAxios()
+  const dispatch = useAppDispatch()
   const [taskForm, setTaskForm] = useState({
     title: '',
     description: '',
+    parentId: null,
+    children: [],
   })
 
   function handleTaskFormChange(
@@ -18,7 +21,7 @@ const TaskCreate = () => {
   }
   async function taskFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const data = await api.post('tasks', taskForm)
+    const data = await dispatch(createTask(taskForm))
     console.log(data)
   }
   return (

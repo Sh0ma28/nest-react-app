@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
-import { AuthService } from '../auth/auth.service'
 import { useAppDispatch } from '../app/hooks'
-import { login } from '../features/user/user.actions'
+import { login, register } from '../features/user/user.actions'
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
@@ -40,11 +39,11 @@ const Login = () => {
 
   async function registerFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const data = await AuthService.registerUser(registerForm)
+    const data = await dispatch(register(registerForm))
     console.log(data)
   }
   return (
-    <div>
+    <div className="Login">
       <button onClick={() => setIsLoginForm(!isLoginForm)}>
         {isLoginForm ? 'Зарегистрироваться' : 'Войти'}
       </button>

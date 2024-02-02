@@ -1,12 +1,14 @@
-export enum EnumTaskStatus {
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETE = 'COMPLETE',
-}
-
 export interface ITask {
+  id: number
   title: string
   description: string | null
-  status: EnumTaskStatus
+  isCompleted: boolean
   parent: ITask | null
   children: ITask[]
+}
+
+export interface ITaskCreate {
+  title: string
+  description: string | null
+  parentId: number | null
 }
